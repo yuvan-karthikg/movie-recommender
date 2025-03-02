@@ -74,7 +74,6 @@ elif year_of_release == "After 2010":
 if time_available == "Under 2 hours":
     filtered_movies = filtered_movies[filtered_movies["runtime"] < 120]
 elif time_available == "Above 2 hours":
-    filtered_movies = filtered_movies[filtered_movies["runtime"] >= 120]"Under 2 hours":
     filtered_movies = filtered_movies[filtered_movies["runtime"] < 120]
 
 if not filtered_movies.empty:
