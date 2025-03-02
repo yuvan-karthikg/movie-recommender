@@ -39,6 +39,9 @@ english_movies = english_movies[["title", "original_language", "genres", "vote_a
 
 combined_movies = pd.concat([english_movies, indian_movies], ignore_index=True)
 
+# Ensure release_year is numeric
+combined_movies["release_year"] = pd.to_numeric(combined_movies["release_year"], errors='coerce')
+
 st.title("🎬 Smart Movie Recommender")
 st.write("Answer a few questions, and we'll suggest the perfect movie for you! 🎥")
 
