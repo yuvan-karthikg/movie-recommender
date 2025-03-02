@@ -74,16 +74,8 @@ elif year_of_release == "After 2010":
 if time_available == "Under 2 hours":
     filtered_movies = filtered_movies[filtered_movies["runtime"] < 120]
 elif time_available == "Above 2 hours":
-    filtered_movies = filtered_movies[filtered_movies["runtime"] >= 120]
     filtered_movies = filtered_movies[filtered_movies["runtime"] >= 120]"Under 2 hours":
     filtered_movies = filtered_movies[filtered_movies["runtime"] < 120]
-elif time_available == "2 - 3.5 hours":
-    filtered_movies = filtered_movies[(filtered_movies["runtime"] >= 120) & (filtered_movies["runtime"] <= 210)]"Under 1.5 hours":
-    filtered_movies = filtered_movies[filtered_movies["runtime"] < 90]
-elif time_available == "1.5 - 3 hours":
-    filtered_movies = filtered_movies[(filtered_movies["runtime"] >= 90) & (filtered_movies["runtime"] <= 180)]
-elif time_available == "Above 3 hours":
-    filtered_movies = filtered_movies[filtered_movies["runtime"] > 180]
 
 if not filtered_movies.empty:
     suggested_movies = random.sample(filtered_movies['title'].dropna().tolist(), min(3, len(filtered_movies)))
