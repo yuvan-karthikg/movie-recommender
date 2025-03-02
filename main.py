@@ -2,55 +2,45 @@ import streamlit as st
 import pandas as pd
 import random
 
-# Load the movie datasets
-df_eng = pd.read_csv("english_movies.csv")
-df_indian = pd.read_csv("indian_movies.csv")
+# Load datasets
+english_movies = pd.read_csv('/mnt/data/english_movie.csv')
+indian_movies = pd.read_csv('/mnt/data/indian_movie.csv')
 
-# Merge datasets
-df = pd.concat([df_eng, df_indian], ignore_index=True)
-
-# Extract useful columns
-df = df[['original_title', 'overview', 'genres', 'original_language']]
-
-# Convert genres from JSON-like string to a readable format
-def extract_genres(genre_str):
-    try:
-        import ast  # To safely evaluate the string as a list of dictionaries
-        genres = [g['name'] for g in ast.literal_eval(genre_str)]
-        return ', '.join(genres)
-    except:
-        return "Unknown"
-
-df['genres'] = df['genres'].apply(extract_genres)
+# Function to recommend a movie
+def recommend_movie(language, genre, min_year, min_rating):
+    if language == 'English':
+        movies = english_movies
+    else:
+        movies = indian_movies[indian_movies['Language'] == language]
+    
+    # Filter based on user preferences
+    filtered_movies = movies[(movies['Genre'].str.contains(genre, case=False, na=False)) &
+                              (movies['Year'] >= min_year) &
+                              (movies['Rating'] >= min_rating)]
+    
+    if not filtered_movies.empty:
+        return filtered_movies.sample(1).iloc[0]
+    else:
+        return None
 
 # Streamlit UI
-st.title("🎬 Movie Recommendation System")
-st.write("Find the perfect movie based on your preferences!")
+st.title("Movie Recommendation System")
 
+# User input
+language = st.radio("What language are you in the mood for?", ["English", "Hindi", "Malayalam", "Tamil", "Telugu"])
+genre = st.selectbox("Pick a genre", ["Action", "Comedy", "Drama", "Thriller", "Romance", "Horror"])
+min_year = st.slider("Select the minimum release year", min_value=1950, max_value=2025, value=2000)
+min_rating = st.slider("Minimum IMDb rating", min_value=0.0, max_value=10.0, value=6.0, step=0.1)
 
-language = st.selectbox("What language are you in the mood for today?", options=df['original_language'].unique())
+if st.button("Recommend a Movie"):
+    movie = recommend_movie(language, genre, min_year, min_rating)
+    if movie is not None:
+        st.write(f"### {movie['Title']} ({movie['Year']})")
+        st.write(f"**Genre:** {movie['Genre']}")
+        st.write(f"**IMDb Rating:** {movie['Rating']}")
+        st.write(f"**Summary:** {movie.get('Summary', 'No summary available.')}")
+    else:
+        st.write("No movies found matching your criteria. Try adjusting the filters!")
 
+# Run this script using: streamlit run script_name.py
 
-genre_options = set(', '.join(df['genres'].unique()).split(', '))
-genre = st.selectbox("What genre do you prefer?", options=sorted(genre_options))
-
-
-extra_genres = st.multiselect("Any additional genres you'd like to include?", options=sorted(genre_options))
-
-
-filtered_movies = df[(df['original_language'] == language) & (df['genres'].str.contains(genre, case=False, na=False))]
-
-
-if extra_genres:
-    for g in extra_genres:
-        filtered_movies = filtered_movies[filtered_movies['genres'].str.contains(g, case=False, na=False)]
-
-
-if not filtered_movies.empty:
-    selected_movie = filtered_movies.sample(1).iloc[0]
-    st.write("### 🎥 We recommend you watch:")
-    st.subheader(selected_movie['original_title'])
-    st.write("**Genre:**", selected_movie['genres'])
-    st.write("**Overview:**", selected_movie['overview'])
-else:
-    st.write("❌ Sorry, no movies found matching your criteria. Try adjusting your filters!")
