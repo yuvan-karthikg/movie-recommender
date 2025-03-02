@@ -2,17 +2,17 @@ import streamlit as st
 import pandas as pd
 import random
 
-
+# Load the movie datasets
 df_eng = pd.read_csv("english_movies.csv")
 df_indian = pd.read_csv("indian_movies.csv")
 
-
+# Merge datasets
 df = pd.concat([df_eng, df_indian], ignore_index=True)
 
-
+# Extract useful columns
 df = df[['original_title', 'overview', 'genres', 'original_language']]
 
-
+# Convert genres from JSON-like string to a readable format
 def extract_genres(genre_str):
     try:
         import ast  # To safely evaluate the string as a list of dictionaries
@@ -28,16 +28,7 @@ st.title("🎬 Movie Recommendation System")
 st.write("Find the perfect movie based on your preferences!")
 
 
-language_mapping = {
-    'en': 'English',
-    'hi': 'Hindi',
-    'ta': 'Tamil',
-    'ml': 'Malayalam',
-    'te': 'Telugu'
-}
-df['language_full'] = df['original_language'].map(language_mapping).fillna(df['original_language'])
-
-language = st.selectbox("What language are you in the mood for today?", options=df['language_full'].unique())
+language = st.selectbox("What language are you in the mood for today?", options=df['original_language'].unique())
 
 
 genre_options = set(', '.join(df['genres'].unique()).split(', '))
