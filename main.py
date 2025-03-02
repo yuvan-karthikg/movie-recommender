@@ -3,8 +3,8 @@ import pandas as pd
 import random
 
 
-df_eng = pd.read_csv("english_movies.csv")
-df_indian = pd.read_csv("indian_movies.csv")
+df_eng = pd.read_csv("english_movie.csv")
+df_indian = pd.read_csv("indian_movie.csv")
 
 
 df = pd.concat([df_eng, df_indian], ignore_index=True)
