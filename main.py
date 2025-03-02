@@ -79,7 +79,9 @@ elif time_available == "Above 3 hours":
     filtered_movies = filtered_movies[filtered_movies["runtime"] > 180]
 
 if not filtered_movies.empty:
-    suggested_movie = random.choice(filtered_movies['title'].dropna().tolist())
-    st.success(f"We recommend you to watch: 🎬 **{suggested_movie}**")
+    suggested_movies = random.sample(filtered_movies['title'].dropna().tolist(), min(3, len(filtered_movies)))
+    st.success("We recommend you to watch:")
+    for movie in suggested_movies:
+        st.write(f"🎬 **{movie}**")
 else:
     st.error("Sorry, we couldn't find a perfect match. Try changing your preferences!")
