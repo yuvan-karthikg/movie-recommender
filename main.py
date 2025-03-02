@@ -6,7 +6,6 @@ import random
 data_url_english = "https://raw.githubusercontent.com/yuvan-karthikg/movie-recommender/refs/heads/main/english_movie.csv"
 data_url_indian = "https://raw.githubusercontent.com/yuvan-karthikg/movie-recommender/refs/heads/main/indian_movies.csv"
 
-
 # Load datasets
 english_movies = pd.read_csv(data_url_english)
 indian_movies = pd.read_csv(data_url_indian)
@@ -75,6 +74,7 @@ elif year_of_release == "After 2010":
 if time_available == "Under 2 hours":
     filtered_movies = filtered_movies[filtered_movies["runtime"] < 120]
 elif time_available == "Above 2 hours":
+    filtered_movies = filtered_movies[filtered_movies["runtime"] >= 120]
     filtered_movies = filtered_movies[filtered_movies["runtime"] >= 120]"Under 2 hours":
     filtered_movies = filtered_movies[filtered_movies["runtime"] < 120]
 elif time_available == "2 - 3.5 hours":
