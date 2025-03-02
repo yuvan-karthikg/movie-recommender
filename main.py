@@ -3,8 +3,8 @@ import pandas as pd
 import random
 
 # Load combined dataset
-data_url_english = "/mnt/data/english_movie.csv"
-data_url_indian = "/mnt/data/indian_movies.csv"
+data_url_english = "https://raw.githubusercontent.com/yuvan-karthikg/movie-recommender/refs/heads/main/english_movie.csv"
+data_url_indian = "https://raw.githubusercontent.com/yuvan-karthikg/movie-recommender/refs/heads/main/indian_movies.csv"
 
 # Load datasets
 english_movies = pd.read_csv(data_url_english)
