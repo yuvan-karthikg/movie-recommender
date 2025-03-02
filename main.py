@@ -6,11 +6,11 @@ import random
 data_url_english = "https://raw.githubusercontent.com/yuvan-karthikg/movie-recommender/refs/heads/main/english_movie.csv"
 data_url_indian = "https://raw.githubusercontent.com/yuvan-karthikg/movie-recommender/refs/heads/main/indian_movies.csv"
 
-# Load datasets
+
 english_movies = pd.read_csv(data_url_english)
 indian_movies = pd.read_csv(data_url_indian)
 
-# Clean and merge datasets
+
 indian_movies.replace("-", pd.NA, inplace=True)
 indian_movies.rename(columns={
     "Movie Name": "title",
@@ -39,34 +39,34 @@ english_movies = english_movies[["title", "original_language", "genres", "vote_a
 
 combined_movies = pd.concat([english_movies, indian_movies], ignore_index=True)
 
-# Ensure release_year and runtime are numeric
+
 combined_movies["release_year"] = pd.to_numeric(combined_movies["release_year"], errors='coerce')
 combined_movies["runtime"] = pd.to_numeric(combined_movies["runtime"], errors='coerce')
 
-# Drop movies with missing runtime
+
 combined_movies = combined_movies.dropna(subset=["runtime"])
 
 st.title("🎬 Smart Movie Recommender")
 st.write("Answer a few questions, and we'll suggest the perfect movie for you! 🎥")
 
-# Step 1: Ask for language preference
+
 language = st.selectbox("What language are you in the mood for?", ["English", "Hindi", "Tamil", "Telugu", "Malayalam"])
 
-# Map language input to dataset language codes
+
 language_map_reverse = {"English": "en", "Hindi": "hi", "Tamil": "ta", "Telugu": "te", "Malayalam": "ml"}
 language_code = language_map_reverse[language]
 
-# Step 2: Ask for genre preference
+
 genre = st.selectbox("Which genre do you feel like watching?", ["Action", "Comedy", "Drama", "Horror", "Sci-Fi", "Romance", "Adventure"])
 
-# Step 3: Ask for year and duration preference
+
 year_of_release = st.radio("Which year range do you prefer?", ["Before 2000", "2000-2010", "After 2010"])
 time_available = st.selectbox("How much time do you have?", ["Under 2 hours", "Above 2 hours"])
 
-# Step 4: Filter movies based on preferences
+
 filtered_movies = combined_movies[(combined_movies['original_language'] == language_code) & (combined_movies['genres'].str.contains(genre, na=False))]
 
-# Apply year filter
+
 if year_of_release == "Before 2000":
     filtered_movies = filtered_movies[filtered_movies["release_year"] < 2000]
 elif year_of_release == "2000-2010":
@@ -74,7 +74,7 @@ elif year_of_release == "2000-2010":
 elif year_of_release == "After 2010":
     filtered_movies = filtered_movies[filtered_movies["release_year"] > 2010]
 
-# Apply duration filter
+
 if time_available == "Under 2 hours":
     filtered_movies = filtered_movies[filtered_movies["runtime"] < 120]
 elif time_available == "Above 2 hours":
