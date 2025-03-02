@@ -39,8 +39,12 @@ english_movies = english_movies[["title", "original_language", "genres", "vote_a
 
 combined_movies = pd.concat([english_movies, indian_movies], ignore_index=True)
 
-# Ensure release_year is numeric
+# Ensure release_year and runtime are numeric
 combined_movies["release_year"] = pd.to_numeric(combined_movies["release_year"], errors='coerce')
+combined_movies["runtime"] = pd.to_numeric(combined_movies["runtime"], errors='coerce')
+
+# Drop movies with missing runtime
+combined_movies = combined_movies.dropna(subset=["runtime"])
 
 st.title("🎬 Smart Movie Recommender")
 st.write("Answer a few questions, and we'll suggest the perfect movie for you! 🎥")
@@ -74,7 +78,7 @@ elif year_of_release == "After 2010":
 if time_available == "Under 2 hours":
     filtered_movies = filtered_movies[filtered_movies["runtime"] < 120]
 elif time_available == "Above 2 hours":
-    filtered_movies = filtered_movies[filtered_movies["runtime"] < 120]
+    filtered_movies = filtered_movies[filtered_movies["runtime"] >= 120]
 
 if not filtered_movies.empty:
     suggested_movies = random.sample(filtered_movies['title'].dropna().tolist(), min(3, len(filtered_movies)))
