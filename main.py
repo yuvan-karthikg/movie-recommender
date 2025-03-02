@@ -32,8 +32,10 @@ language_map = {
 }
 indian_movies["original_language"] = indian_movies["original_language"].str.lower().map(language_map)
 
-indian_movies = indian_movies[["title", "original_language", "genres", "vote_average", "runtime"]]
-english_movies = english_movies[["title", "original_language", "genres", "vote_average", "runtime"]]
+indian_movies.rename(columns={"Year": "release_year"}, inplace=True)
+indian_movies = indian_movies[["title", "original_language", "genres", "vote_average", "runtime", "release_year"]]
+english_movies["release_year"] = pd.to_datetime(english_movies["release_date"], errors='coerce').dt.year
+english_movies = english_movies[["title", "original_language", "genres", "vote_average", "runtime", "release_year"]]
 
 combined_movies = pd.concat([english_movies, indian_movies], ignore_index=True)
 
@@ -50,12 +52,28 @@ language_code = language_map_reverse[language]
 # Step 2: Ask for genre preference
 genre = st.selectbox("Which genre do you feel like watching?", ["Action", "Comedy", "Drama", "Horror", "Sci-Fi", "Romance", "Adventure"])
 
-# Step 3: General fun questions
-mood = st.radio("What's your mood today?", ["Excited", "Chill", "Emotional", "Adventurous"])
-time_available = st.selectbox("How much time do you have?", ["Short (Under 1.5 hours)", "Medium (1.5-2.5 hours)", "Long (Over 2.5 hours)"])
+# Step 3: Ask for year and duration preference
+year_of_release = st.radio("Which year range do you prefer?", ["Before 2000", "2000-2010", "After 2010"])
+time_available = st.selectbox("How much time do you have?", ["Under 1.5 hours", "1.5 - 3 hours", "Above 3 hours"])
 
 # Step 4: Filter movies based on preferences
 filtered_movies = combined_movies[(combined_movies['original_language'] == language_code) & (combined_movies['genres'].str.contains(genre, na=False))]
+
+# Apply year filter
+if year_of_release == "Before 2000":
+    filtered_movies = filtered_movies[filtered_movies["release_year"] < 2000]
+elif year_of_release == "2000-2010":
+    filtered_movies = filtered_movies[(filtered_movies["release_year"] >= 2000) & (filtered_movies["release_year"] <= 2010)]
+elif year_of_release == "After 2010":
+    filtered_movies = filtered_movies[filtered_movies["release_year"] > 2010]
+
+# Apply duration filter
+if time_available == "Under 1.5 hours":
+    filtered_movies = filtered_movies[filtered_movies["runtime"] < 90]
+elif time_available == "1.5 - 3 hours":
+    filtered_movies = filtered_movies[(filtered_movies["runtime"] >= 90) & (filtered_movies["runtime"] <= 180)]
+elif time_available == "Above 3 hours":
+    filtered_movies = filtered_movies[filtered_movies["runtime"] > 180]
 
 if not filtered_movies.empty:
     suggested_movie = random.choice(filtered_movies['title'].dropna().tolist())
